@@ -1,11 +1,10 @@
 import {withPluginApi} from 'discourse/lib/plugin-api';
-import {onToolbarCreate} from 'discourse/components/d-editor';
 
-function addButtons(siteSettings) {
+function addButtons(api, siteSettings) {
   if (siteSettings.cfbtn_enabled) {
     //openHAB items syntax button
     if (siteSettings.cfbtn_openhab_items) {
-      onToolbarCreate(toolbar => {
+      api.onToolbarCreate(toolbar => {
         toolbar.addButton({
           id: "cfbtn_openhab_items",
           group: "extras",
@@ -16,7 +15,7 @@ function addButtons(siteSettings) {
     }
     //openHAB rules syntax button
     if (siteSettings.cfbtn_openhab_rules) {
-      onToolbarCreate(toolbar => {
+      api.onToolbarCreate(toolbar => {
         toolbar.addButton({
           id: "cfbtn_openhab_rules",
           group: "extras",
@@ -27,7 +26,7 @@ function addButtons(siteSettings) {
     }
     //openHAB sitemap syntax button
     if (siteSettings.cfbtn_openhab_sitemap) {
-      onToolbarCreate(toolbar => {
+      api.onToolbarCreate(toolbar => {
         toolbar.addButton({
           id: "cfbtn_openhab_sitemap",
           group: "extras",
@@ -38,7 +37,7 @@ function addButtons(siteSettings) {
     }
     //javascript
     if (siteSettings.cfbtn_javascript) {
-      onToolbarCreate(toolbar => {
+      api.onToolbarCreate(toolbar => {
         toolbar.addButton({
           id: "cfbtn_javascript",
           group: "extras",
@@ -50,7 +49,7 @@ function addButtons(siteSettings) {
     //custom syntax, defined in discourse settings dialog
     if (siteSettings.cfbtn_custom1.length !== 0) {
       var syntax = siteSettings.cfbtn_custom1;
-      onToolbarCreate(toolbar => {
+      api.onToolbarCreate(toolbar => {
         toolbar.addButton({
           id: ("cfbtn_custom1"),
           group: "extras",
@@ -62,21 +61,14 @@ function addButtons(siteSettings) {
   }
 }
 
-function priorToApi(container) {
-  const siteSettings = container.lookup('site-settings:main');
-  addButtons(siteSettings);
-}
-
 function initializePlugin(api) {
-  const siteSettings = api.container.lookup('site-settings:main');
-  addButtons(siteSettings);
+  const siteSettings = api.container.lookup('service:site-settings');
+  addButtons(api, siteSettings);
 }
 
 export default {
   name: 'cfbtn',
   initialize(container) {
-    withPluginApi('0.1', api => initializePlugin(api), {
-      noApi: () => priorToApi(container)
-    });
+    withPluginApi(api => initializePlugin(api));
   }
 };
